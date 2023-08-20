@@ -40,23 +40,28 @@ const Home = () => {
     return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   }
 
-  console.log(formatTime(1)); // Output: 00:00:01
-  console.log(formatTime(100)); // Output: 00:01:40
-  console.log(formatTime(3800)); // Output: 01:03:20
+  const handleDeleteNote = (indexToDelete) => {
+    const updatedNotes = notes.filter((_, index) => index !== indexToDelete);
+    setNotes(updatedNotes);
+  };
 
-  //   const onDragEnd = (result) => {
-  //     if (!result.destination) {
-  //       return; // Return if the item was dropped outside of a valid droppable area
-  //     }
+  const onDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
 
-  //     const updatedNotes = Array.from(notes);
-  //     const [reorderedItem] = updatedNotes.splice(result.source.index, 1);
-  //     updatedNotes.splice(result.destination.index, 0, reorderedItem);
+    if (result.destination.droppableId === "delete-zone") {
+      // Note was dropped into the delete zone
+      handleDeleteNote(result.source.index);
+      return; // Return to prevent further handling
+    }
 
-  //     // Update your state or data source with the new order of notes
-  //     // For example, if you're using React state:
-  //     setNotes(updatedNotes);
-  //   };
+    const updatedNotes = Array.from(notes);
+    const [reorderedItem] = updatedNotes.splice(result.source.index, 1);
+    updatedNotes.splice(result.destination.index, 0, reorderedItem);
+
+    setNotes(updatedNotes);
+  };
 
   const onSubmit = (data) => {
     setNotes([...notes, { note: data.note, time: playedSeconds }]);
@@ -66,7 +71,7 @@ const Home = () => {
       <Header />
       <div className="flex w-screen h-screen">
         <div className="bg-slate-600 w-[60%] flex flex-col  items-center">
-          <h1 className="text-white text-xl mt-5"> Videos</h1>
+          <h1 className="text-white text-xl mt-5"> Video</h1>
           <ReactPlayer
             ref={playerRef}
             className="bg-slate-500 rounded-lg shadow-md m-10"
@@ -100,16 +105,14 @@ const Home = () => {
         <div className="bg-red-300 w-[40%] flex flex-col justify-start items-center gap-5">
           <h1 className="text-white text-xl mt-5">Notes</h1>
           <h1 className="text-white text-xl">Notes Count:{notes.length}</h1>
-          <div
-            className="bg-slate-500 rounded-lg w-[60%] h-[400px] flex flex-col items-center overflow-y-scroll p-2"
-            style={{
-              scrollbarWidth: "thin" /* Width of the vertical scrollbar */,
-              scrollbarColor:
-                "rgba(255, 255, 255, 0.4) transparent" /* Color of the thumb and track */,
-            }}
-          >
-            {/* <DragDropContext onDragEnd={onDragEnd}> */}
-            <DragDropContext>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div
+              className="bg-slate-500 rounded-lg w-[60%] h-[400px] flex flex-col overflow-y-scroll p-2"
+              style={{
+                scrollbarWidth: "thin",
+                scrollbarColor: "rgba(255, 255, 255, 0.4) transparent",
+              }}
+            >
               <Droppable droppableId="notes-list" direction="vertical">
                 {(provided) => (
                   <div
@@ -130,20 +133,27 @@ const Home = () => {
                   </div>
                 )}
               </Droppable>
-            </DragDropContext>
-          </div>
-          {/* <div className="bg-slate-500 rounded-lg w-[60%] h-[400px] flex flex-col items-center overflow-y-scroll ">
-            {notes.map((element, index) => (
-              <Note
-                key={index}
-                index={index}
-                Time={element.time}
-                Note={element.note}
-                onTimeClick={handleTimeClick}
-              />
-            ))}
-            notes
-          </div> */}
+            </div>
+            <div
+              className="bg-blue-700 w-[60%] h-[100px]"
+              style={{
+                border: "1px dashed white",
+              }}
+            >
+              <Droppable droppableId="delete-zone">
+                {(provided) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className="w-full h-full flex items-center justify-center"
+                  >
+                    Drag Notes to delete 🗑️
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          </DragDropContext>
         </div>
       </div>
     </div>

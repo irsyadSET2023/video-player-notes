@@ -20,7 +20,7 @@ const Note = ({ index, Time, Note, onTimeClick }) => {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
-          className="bg-white rounded-lg shadow-md p-3 flex gap-5 cursor-move "
+          className="bg-white rounded-lg shadow-md p-3 flex gap-5 cursor-move w-[300px]"
         >
           <div
             className="cursor-pointer text-blue-700"
@@ -28,22 +28,15 @@ const Note = ({ index, Time, Note, onTimeClick }) => {
           >
             {Time}
           </div>
-          <div>{Note}</div>
+          <div>
+            <p className=" text-center break-words overflow-wrap w-[200px]">
+              {Note}
+            </p>
+          </div>
         </div>
       )}
     </Draggable>
   );
-
-  //   return (
-  //     <Draggable>
-  //       <div className="bg-green-500 rounded-lg shadow-md p-3 flex gap-5 cursor-move w-[80%]">
-  //         <div className="cursor-pointer" onClick={handleTimeClick}>
-  //           {Time}s
-  //         </div>
-  //         <div>{Note}</div>
-  //       </div>
-  //     </Draggable>
-  //   );
 };
 
 export default Note;
